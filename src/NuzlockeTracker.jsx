@@ -10,7 +10,8 @@ import {
   TableRow,
   IconButton,
   Typography,
-  Tooltip
+  Tooltip,
+  Checkbox,
 } from '@mui/material';
 import { Box } from '@mui/system';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -18,22 +19,26 @@ import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import EditIcon from '@mui/icons-material/Edit';
 import CancelIcon from '@mui/icons-material/Cancel';
 import DoneIcon from '@mui/icons-material/Done';
+import HeartBrokenIcon from '@mui/icons-material/HeartBroken';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import compareArrays from './utils/compareArrays';
 import { setCookie, getCookie, clearCookie } from './utils/cookies';
 import addTime from './utils/addTime';
 
 function NuzlockeTracker(props) {
   const [data, setData] = useState([]);
+  const cookieName = 'tableData';
+  const cookieData = getCookie(cookieName);
+  const livingPokemon = ([...cookieData].filter((item) => {if (!item.dead) return item}))
+  const deadPokemon = ([...cookieData].filter((item) => {if (item.dead) return item}))
   const [editing, setEditing] = useState(null);
   const routeRef = useRef();
   const pokemonRef = useRef();
   const routeSearchRef = useRef();
   const pokemonSearchRef = useRef();
+  const showDeadRef = useRef();
   const routeEditRef = useRef();
   const pokemonEditRef = useRef();
-
-  const cookieName = 'tableData';
-  const cookieData = getCookie(cookieName);
   const expiration = addTime({ days: 30 })
 
   const refreshPage = () => {
@@ -42,7 +47,7 @@ function NuzlockeTracker(props) {
 
   useEffect(() => {
     try {
-      if (cookieData) {
+      if (cookieData && !showDeadRef.current.checked) {
         setData(cookieData);
       }
     } catch {
@@ -88,9 +93,10 @@ function NuzlockeTracker(props) {
     setData([])
   }
 
-  const search = () => {
-    if (cookieData) {
-      const newData = cookieData.filter((item) => {
+  const search = (myData) => {
+    const theData = myData && Array.isArray(myData) ? myData : cookieData;
+    if (theData) {
+      const newData = theData.filter((item) => {
         const itemRoute = (item.route).toLowerCase();
         const itemPokemon = (item.pokemon).toLowerCase();
         const routeVal = (routeSearchRef.current.value).toLowerCase();
@@ -99,29 +105,35 @@ function NuzlockeTracker(props) {
         const matchedPokemon = !pokemonVal || (pokemonVal && itemPokemon.match(pokemonVal))
         const nothingTyped = !routeVal && !pokemonVal;
         if ((matchedRoute && matchedPokemon) || nothingTyped) {
-          return item;
+          if (!showDeadRef.current.checked || (showDeadRef.current.checked && item.dead)) {
+            return item;
+          }
         }
       })
       setData(newData);
     }
   };
 
-  const editRow = (itemIndex) => {
-    const newRoute = routeEditRef.current.value;
-    const newPokemon = pokemonEditRef.current.value;
-    const newData = data.map((item) => {
-      if (item.index === itemIndex) {
+  const editRow = (row) => {
+    const newRoute = routeEditRef.current && routeEditRef.current.value;
+    const newPokemon = pokemonEditRef.current && pokemonEditRef.current.value;
+    const newData = cookieData.map((item) => {
+      if (item.index === row.index) {
         return {
           index: item.index,
-          dead: item.dead,
-          route: newRoute,
-          pokemon: newPokemon,
+          dead: row.dead,
+          route: newRoute ? newRoute : item.route,
+          pokemon: newPokemon ? newPokemon : item.pokemon,
         }
       }
       return item;
     })
     setCookie(cookieName, newData, expiration);
-    setData(newData);
+    if (showDeadRef.current.checked) {
+      search(newData);
+    } else {
+      setData(newData);
+    }
     setEditing(null)
   }
 
@@ -155,7 +167,7 @@ function NuzlockeTracker(props) {
           id="Nuzlocke-Table"
           sx={{
             width: 'auto',
-            height: '19em',
+            height: '25em',
             backgroundColor: 'white',
             m: '0.5em',
             border: '2px solid black',
@@ -172,7 +184,7 @@ function NuzlockeTracker(props) {
             </TableHead>
             <TableBody>
               {data.map((item, i) => (
-                <TableRow key={`row_${Math.floor(Math.random() * 100)}_${i}`}>
+                <TableRow sx={{ backgroundColor: item.dead ? 'rgba(255, 0, 0, 0.3)' : i % 2 !== 0 ? 'rgba(20, 20, 20, 0.05)' : 'white' }} key={`row_${Math.floor(Math.random() * 100)}_${i}`}>
                   <TableCell
                     key={`cell_${Math.floor(Math.random() * 100)}_${i}_1`}
                     sx={{
@@ -232,7 +244,7 @@ function NuzlockeTracker(props) {
                             <>
                               <Tooltip title="Submit row">
                                 <IconButton
-                                  onClick={() => editRow(item.index)}
+                                  onClick={() => editRow(item)}
                                   sx={{
                                     width: 'max-content',
                                   }}
@@ -264,6 +276,39 @@ function NuzlockeTracker(props) {
                               </IconButton>
                             </Tooltip>
                           )}
+                        {item.dead
+                          ? (
+                            <Tooltip title="Set pokemon to alive">
+                              <IconButton
+                                onClick={() => {
+                                  const newItem = {...item};
+                                  newItem.dead = false;
+                                  editRow(newItem);
+                                }}
+                                sx={{
+                                  width: 'max-content',
+                                }}
+                              >
+                                <FavoriteIcon />
+                              </IconButton>
+                            </Tooltip>
+                          )
+                          : (
+                            <Tooltip title="Set pokemon to dead">
+                              <IconButton
+                                onClick={() => {
+                                  const newItem = {...item};
+                                  newItem.dead = true;
+                                  editRow(newItem);
+                                }}
+                                sx={{
+                                  width: 'max-content',
+                                }}
+                              >
+                                <HeartBrokenIcon />
+                              </IconButton>
+                            </Tooltip>
+                          )}
                         <Tooltip title="Delete row">
                           <IconButton
                             onClick={() => deleteRow(item.index)}
@@ -289,11 +334,43 @@ function NuzlockeTracker(props) {
           display: 'flex',
           flexDirection: 'column',
           p: '0.5em',
+          height: '100%',
         }}
       >
-        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}><Tooltip title="Clear All"><IconButton onClick={clearAll} sx={{ m: '0.5em', width: 'max-content' }}><RestartAltIcon /></IconButton></Tooltip></Box>
+        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}><Tooltip title="Clear All"><IconButton onClick={clearAll} sx={{ m: '0.5em', width: 'max-content' }}><RestartAltIcon /></IconButton></Tooltip></Box>
         <TextField sx={{ my: '0.5em' }} inputRef={routeSearchRef} label="Search Route" onChange={search} />
         <TextField sx={{ my: '0.5em' }} inputRef={pokemonSearchRef} label="Search Pokemon" onChange={search} />
+        <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}><Checkbox inputRef={showDeadRef} onChange={search} /><Typography>Show dead</Typography></Box>
+        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}><Typography>{`Total Pokemon: ${cookieData.length}`}</Typography></Box>
+        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}><Typography>{`Total Pokemon Alive: ${livingPokemon.length}`}</Typography></Box>
+        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}><Typography>{`Total Pokemon Dead: ${deadPokemon.length}`}</Typography></Box>
+        <TableContainer 
+          id="Nuzlocke-Table"
+          sx={{
+            width: 'auto',
+            height: '100%',
+            backgroundColor: 'white',
+            mt: '0.5em',
+            mb: '1em',
+            border: '2px solid black',
+            borderRadius: '0.5em',
+          }}
+        >
+          <Table stickyHeader aria-label="sticky table">
+            <TableHead>
+              <TableRow key={`row_two_${Math.floor(Math.random() * 100)}_header`}>
+                <TableCell key={`cell_two_${Math.floor(Math.random() * 100)}_header`} sx={{ backgroundColor: 'lightgray', borderBottom: '2px solid black' }}><Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>Dead Pokemon</Box></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {deadPokemon.map((item, i) => (
+                <TableRow key={`row_two_${Math.floor(Math.random() * 100)}_${i}`}>
+                  <TableCell key={`cell_two_${Math.floor(Math.random() * 100)}_${i}`}><Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>{item.pokemon}</Box></TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Box>
     </Box>
   );

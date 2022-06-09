@@ -17,7 +17,7 @@ function App() {
         height: ['max-content', '100vh']
       }}
     >
-      <Typography variant="h4" sx={{ mb: '0.5em' }} >Pokemon Nuzlock App</Typography>
+      <Typography variant="h4" sx={{ mb: '0.5em' }} >Pokemon Nuzlocke App</Typography>
       <NuzlockeTracker />
     </Box>
   );
