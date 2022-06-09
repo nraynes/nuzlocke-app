@@ -167,7 +167,7 @@ function NuzlockeTracker(props) {
           id="Nuzlocke-Table"
           sx={{
             width: 'auto',
-            height: '25em',
+            height: '30em',
             backgroundColor: 'white',
             m: '0.5em',
             border: '2px solid black',
@@ -344,33 +344,35 @@ function NuzlockeTracker(props) {
         <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}><Typography>{`Total Pokemon: ${cookieData.length}`}</Typography></Box>
         <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}><Typography>{`Total Pokemon Alive: ${livingPokemon.length}`}</Typography></Box>
         <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}><Typography>{`Total Pokemon Dead: ${deadPokemon.length}`}</Typography></Box>
-        <TableContainer 
-          id="Nuzlocke-Table"
-          sx={{
-            width: 'auto',
-            height: '100%',
-            backgroundColor: 'white',
-            mt: '0.5em',
-            mb: '1em',
-            border: '2px solid black',
-            borderRadius: '0.5em',
-          }}
-        >
-          <Table stickyHeader aria-label="sticky table">
-            <TableHead>
-              <TableRow key={`row_two_${Math.floor(Math.random() * 100)}_header`}>
-                <TableCell key={`cell_two_${Math.floor(Math.random() * 100)}_header`} sx={{ backgroundColor: 'lightgray', borderBottom: '2px solid black' }}><Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>Dead Pokemon</Box></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {deadPokemon.map((item, i) => (
-                <TableRow key={`row_two_${Math.floor(Math.random() * 100)}_${i}`}>
-                  <TableCell key={`cell_two_${Math.floor(Math.random() * 100)}_${i}`}><Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>{item.pokemon}</Box></TableCell>
+        <Box>
+          <TableContainer 
+            id="Dead-Pokemon_Table"
+            sx={{
+              width: 'auto',
+              height: '14.4em',
+              backgroundColor: 'white',
+              mt: '0.5em',
+              mb: '1em',
+              border: '2px solid black',
+              borderRadius: '0.5em',
+            }}
+          >
+            <Table stickyHeader aria-label="sticky table">
+              <TableHead>
+                <TableRow key={`row_two_${Math.floor(Math.random() * 100)}_header`}>
+                  <TableCell key={`cell_two_${Math.floor(Math.random() * 100)}_header`} sx={{ backgroundColor: 'lightgray', borderBottom: '2px solid black' }}><Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>Dead Pokemon</Box></TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {deadPokemon.map((item, i) => (
+                  <TableRow key={`row_two_${Math.floor(Math.random() * 100)}_${i}`}>
+                    <TableCell key={`cell_two_${Math.floor(Math.random() * 100)}_${i}`}><Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>{item.pokemon}</Box></TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
       </Box>
     </Box>
   );
