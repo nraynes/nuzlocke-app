@@ -23,6 +23,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import DoneIcon from '@mui/icons-material/Done';
 import HeartBrokenIcon from '@mui/icons-material/HeartBroken';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 import HelpIcon from '@mui/icons-material/Help';
 import compareArrays from './utils/compareArrays';
 import { setCookie, getCookie, clearCookie } from './utils/cookies';
@@ -345,14 +346,18 @@ function NuzlockeTracker(props) {
           height: '100%',
         }}
       >
-        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}><Tooltip title="Clear All"><IconButton onClick={clearAll} sx={{ m: '0.5em', width: 'max-content' }}><RestartAltIcon /></IconButton></Tooltip><Tooltip title="Nuzlocke Rules"><IconButton id="help-button" aria-controls={open ? 'help-menu' : undefined} aria-haspopup="true" aria-expanded={open ? 'true' : undefined} onClick={handleClick} sx={{ m: '0.5em', width: 'max-content' }}><HelpIcon /></IconButton></Tooltip></Box>
+        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}>
+          <Tooltip title="Clear All"><IconButton onClick={clearAll} sx={{ m: '0.5em', width: 'max-content' }}><RestartAltIcon /></IconButton></Tooltip>
+          <Tooltip title="Nuzlocke Rules"><IconButton id="rules-button" aria-controls={open ? 'rules-menu' : undefined} aria-haspopup="true" aria-expanded={open ? 'true' : undefined} onClick={handleClick} sx={{ m: '0.5em', width: 'max-content' }}><AssignmentIcon /></IconButton></Tooltip>
+          {/* <Tooltip title="Help"><IconButton id="help-button" aria-controls={open ? 'help-menu' : undefined} aria-haspopup="true" aria-expanded={open ? 'true' : undefined} onClick={handleClick} sx={{ m: '0.5em', width: 'max-content' }}><HelpIcon /></IconButton></Tooltip> */}
+        </Box>
         <Menu
-          id="help-menu"
+          id="rules-menu"
           anchorEl={anchorEl}
           open={open}
           onClose={handleClose}
           MenuListProps={{
-            'aria-labelledby': 'help-button',
+            'aria-labelledby': 'rules-button',
             sx: {
               backgroundColor: 'rgba(250,250,250)',
             }
