@@ -46,9 +46,11 @@ function NuzlockeTracker(props) {
   const expiration = addTime({ days: 30 })
 
   const [anchorEl, setAnchorEl] = useState(null);
+  const [helpItem, setHelpItem] = useState(0);
   const open = Boolean(anchorEl);
-  const handleClick = (event) => {
+  const handleClick = (event, i) => {
     setAnchorEl(event.currentTarget);
+    setHelpItem(i);
   };
   const handleClose = () => {
     setAnchorEl(null);
@@ -145,6 +147,45 @@ function NuzlockeTracker(props) {
     search(newData);
     setEditing(null)
   }
+
+  const renderMenu = () => (
+    helpItem === 1
+      ? (
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            px: '1em',
+            maxWidth: '40em',
+          }}
+        >
+          <Typography sx={{ my: '0.2em' }} variant="h6">Nuzlocke Rules</Typography>
+          <Typography sx={{ my: '0.2em', backgroundColor: 'rgba(230,240,230)', p: '0.5em', borderRadius: '0.5em' }}>Rule #1: Any Pokémon that faints is considered dead and must be released or stored in the box for the rest of the game.</Typography>
+          <Typography sx={{ my: '0.2em', backgroundColor: 'rgba(230,230,240)', p: '0.5em', borderRadius: '0.5em' }}>Rule #2: The player may only catch the first wild Pokémon encountered in each area, and none else. If the first wild Pokémon encountered faints or flees, there are no second chances. If the first encounter in the area is a Double Battle, the player is free to choose which of the two wild Pokémon they would like to catch but may only catch one of them. This restriction does not necessarily apply to Pokémon able to be captured during static encounters, nor to Shiny Pokémon.</Typography>
+          <Typography sx={{ my: '0.2em', backgroundColor: 'rgba(240,220,240)', p: '0.5em', borderRadius: '0.5em' }}>Rule #3: The player may not voluntarily reset and reload the game whenever things go wrong. Being able to do so would render all of the other rules pointless.</Typography>
+          <Typography sx={{ my: '0.2em', backgroundColor: 'rgba(240,240,230)', p: '0.5em', borderRadius: '0.5em' }}>Rule #4: The player must nickname all of their Pokémon, for the sake of forming stronger emotional bonds.</Typography>
+          <Typography sx={{ my: '0.2em', backgroundColor: 'rgba(220,240,240)', p: '0.5em', borderRadius: '0.5em' }}>Rule #5: The player may put Pokémon that have fainted in the Pokémon Storage System permanently rather than releasing them. Some players of the Nuzlocke Challenge may have designated boxes for Pokémon that fainted.</Typography>
+          <Typography sx={{ my: '0.2em', backgroundColor: 'rgba(240,230,230)', p: '0.5em', borderRadius: '0.5em' }}>Rule #6: The player may only use Pokémon they have captured themselves, meaning Pokémon acquired through trading, Mystery Gifts, etc., are prohibited. Trading for the purpose of evolving Pokémon is allowed.</Typography>
+        </Box>
+    )
+    : (
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          px: '1em',
+          maxWidth: '40em',
+        }}
+      >
+        <Typography sx={{ my: '0.2em' }} variant="h6">App Help</Typography>
+        <Typography sx={{ my: '0.2em', backgroundColor: 'rgba(240,220,230)', p: '0.5em', borderRadius: '0.5em' }}>This app is designed to be used to help track what routes you have picked up Pokémon on. The rules of a Pokémon Nuzlocke state that you can only capture the first Pokémon per route, so you can use this app to track this information to make your Nuzlocke easier! The rules of a Nuzlocke are available by clicking the button that looks like a clipboard. To use the app, just type in the route and pokemon you caught on that route (or if it's your starter, just put starter for the route and if you didn't catch anything on the route, just put N/a.) and click "Add". This will add the information to the table and you can either edit the information, delete the information, or set that Pokémon's status to dead to track which Pokémon you have available and which routes you've already been on. You also get a view of some other information on the right side of the screen such as how many pokemon and routes you've discovered, plus how many are dead and alive, and which ones are dead. If you want to see/edit any of your dead Pokémon, just check the show dead checkbox to view all of your dead Pokémon in the table, or alternatively you can search through the table by route or by Pokémon (you can use both at the same time). Enjoy!</Typography>
+      </Box>
+    )
+  )
 
   return (
     <Box
@@ -348,8 +389,8 @@ function NuzlockeTracker(props) {
       >
         <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}>
           <Tooltip title="Clear All"><IconButton onClick={clearAll} sx={{ m: '0.5em', width: 'max-content' }}><RestartAltIcon /></IconButton></Tooltip>
-          <Tooltip title="Nuzlocke Rules"><IconButton id="rules-button" aria-controls={open ? 'rules-menu' : undefined} aria-haspopup="true" aria-expanded={open ? 'true' : undefined} onClick={handleClick} sx={{ m: '0.5em', width: 'max-content' }}><AssignmentIcon /></IconButton></Tooltip>
-          {/* <Tooltip title="Help"><IconButton id="help-button" aria-controls={open ? 'help-menu' : undefined} aria-haspopup="true" aria-expanded={open ? 'true' : undefined} onClick={handleClick} sx={{ m: '0.5em', width: 'max-content' }}><HelpIcon /></IconButton></Tooltip> */}
+          <Tooltip title="Nuzlocke Rules"><IconButton id="rules-button" aria-controls={open ? 'rules-menu' : undefined} aria-haspopup="true" aria-expanded={open ? 'true' : undefined} onClick={(e) => handleClick(e, 1)} sx={{ m: '0.5em', width: 'max-content' }}><AssignmentIcon /></IconButton></Tooltip>
+          <Tooltip title="Help"><IconButton id="help-button" aria-controls={open ? 'help-menu' : undefined} aria-haspopup="true" aria-expanded={open ? 'true' : undefined} onClick={(e) => handleClick(e, 2)} sx={{ m: '0.5em', width: 'max-content' }}><HelpIcon /></IconButton></Tooltip>
         </Box>
         <Menu
           id="rules-menu"
@@ -368,24 +409,7 @@ function NuzlockeTracker(props) {
             overFlow: 'scroll',
           }}
         >
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              px: '1em',
-              maxWidth: '40em',
-            }}
-          >
-            <Typography sx={{ my: '0.2em' }} variant="h6">Nuzlocke Rules</Typography>
-            <Typography sx={{ my: '0.2em', backgroundColor: 'rgba(230,240,230)', p: '0.5em', borderRadius: '0.5em' }}>Rule #1: Any Pokémon that faints is considered dead and must be released or stored in the box for the rest of the game.</Typography>
-            <Typography sx={{ my: '0.2em', backgroundColor: 'rgba(230,230,240)', p: '0.5em', borderRadius: '0.5em' }}>Rule #2: The player may only catch the first wild Pokémon encountered in each area, and none else. If the first wild Pokémon encountered faints or flees, there are no second chances. If the first encounter in the area is a Double Battle, the player is free to choose which of the two wild Pokémon they would like to catch but may only catch one of them. This restriction does not necessarily apply to Pokémon able to be captured during static encounters, nor to Shiny Pokémon.</Typography>
-            <Typography sx={{ my: '0.2em', backgroundColor: 'rgba(240,220,240)', p: '0.5em', borderRadius: '0.5em' }}>Rule #3: The player may not voluntarily reset and reload the game whenever things go wrong. Being able to do so would render all of the other rules pointless.</Typography>
-            <Typography sx={{ my: '0.2em', backgroundColor: 'rgba(240,240,230)', p: '0.5em', borderRadius: '0.5em' }}>Rule #4: The player must nickname all of their Pokémon, for the sake of forming stronger emotional bonds.</Typography>
-            <Typography sx={{ my: '0.2em', backgroundColor: 'rgba(220,240,240)', p: '0.5em', borderRadius: '0.5em' }}>Rule #5: The player may put Pokémon that have fainted in the Pokémon Storage System permanently rather than releasing them. Some players of the Nuzlocke Challenge may have designated boxes for Pokémon that fainted.</Typography>
-            <Typography sx={{ my: '0.2em', backgroundColor: 'rgba(240,230,230)', p: '0.5em', borderRadius: '0.5em' }}>Rule #6: The player may only use Pokémon they have captured themselves, meaning Pokémon acquired through trading, Mystery Gifts, etc., are prohibited. Trading for the purpose of evolving Pokémon is allowed.</Typography>
-          </Box>
+          {renderMenu()}
         </Menu>
         <TextField sx={{ my: '0.5em' }} inputRef={routeSearchRef} label="Search Route" onChange={search} />
         <TextField sx={{ my: '0.5em' }} inputRef={pokemonSearchRef} label="Search Pokémon" onChange={search} />
