@@ -12,6 +12,8 @@ import {
   Typography,
   Tooltip,
   Checkbox,
+  Menu,
+  MenuItem,
 } from '@mui/material';
 import { Box } from '@mui/system';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -21,6 +23,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import DoneIcon from '@mui/icons-material/Done';
 import HeartBrokenIcon from '@mui/icons-material/HeartBroken';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import HelpIcon from '@mui/icons-material/Help';
 import compareArrays from './utils/compareArrays';
 import { setCookie, getCookie, clearCookie } from './utils/cookies';
 import addTime from './utils/addTime';
@@ -41,6 +44,15 @@ function NuzlockeTracker(props) {
   const pokemonEditRef = useRef();
   const expiration = addTime({ days: 30 })
 
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   const refreshPage = () => {
     window.location.reload();
   }
@@ -57,7 +69,7 @@ function NuzlockeTracker(props) {
 
   const headers = [
     'Route',
-    'Pokemon',
+    'Pokémon',
   ];
 
   const addRow = (route, pokemon) => {
@@ -129,11 +141,7 @@ function NuzlockeTracker(props) {
       return item;
     })
     setCookie(cookieName, newData, expiration);
-    if (showDeadRef.current.checked) {
-      search(newData);
-    } else {
-      setData(newData);
-    }
+    search(newData);
     setEditing(null)
   }
 
@@ -160,7 +168,7 @@ function NuzlockeTracker(props) {
           }}
         >
           <TextField sx={{ mx: '0.5em', width: '100%' }} inputRef={routeRef} label="Route" />
-          <TextField sx={{ mx: '0.5em', width: '100%' }} inputRef={pokemonRef} label="Pokemon" />
+          <TextField sx={{ mx: '0.5em', width: '100%' }} inputRef={pokemonRef} label="Pokémon" />
           <Button type="submit" onClick={(e) => {e.preventDefault(); addRow(routeRef.current.value, pokemonRef.current.value)}} variant="contained" color="secondary" sx={{ mx: '0.5em', width: 'max-content' }}>Add</Button>
         </Box>
         <TableContainer
@@ -278,7 +286,7 @@ function NuzlockeTracker(props) {
                           )}
                         {item.dead
                           ? (
-                            <Tooltip title="Set pokemon to alive">
+                            <Tooltip title="Set Pokémon to alive">
                               <IconButton
                                 onClick={() => {
                                   const newItem = {...item};
@@ -294,7 +302,7 @@ function NuzlockeTracker(props) {
                             </Tooltip>
                           )
                           : (
-                            <Tooltip title="Set pokemon to dead">
+                            <Tooltip title="Set Pokémon to dead">
                               <IconButton
                                 onClick={() => {
                                   const newItem = {...item};
@@ -337,13 +345,49 @@ function NuzlockeTracker(props) {
           height: '100%',
         }}
       >
-        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}><Tooltip title="Clear All"><IconButton onClick={clearAll} sx={{ m: '0.5em', width: 'max-content' }}><RestartAltIcon /></IconButton></Tooltip></Box>
+        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}><Tooltip title="Clear All"><IconButton onClick={clearAll} sx={{ m: '0.5em', width: 'max-content' }}><RestartAltIcon /></IconButton></Tooltip><Tooltip title="Nuzlocke Rules"><IconButton id="help-button" aria-controls={open ? 'help-menu' : undefined} aria-haspopup="true" aria-expanded={open ? 'true' : undefined} onClick={handleClick} sx={{ m: '0.5em', width: 'max-content' }}><HelpIcon /></IconButton></Tooltip></Box>
+        <Menu
+          id="help-menu"
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          MenuListProps={{
+            'aria-labelledby': 'help-button',
+            sx: {
+              backgroundColor: 'rgba(250,250,250)',
+            }
+          }}
+          sx={{
+            mx: '1em',
+            maxHeight: '30em',
+            overFlow: 'scroll',
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              px: '1em',
+              maxWidth: '40em',
+            }}
+          >
+            <Typography sx={{ my: '0.2em' }} variant="h6">Nuzlocke Rules</Typography>
+            <Typography sx={{ my: '0.2em', backgroundColor: 'rgba(230,240,230)', p: '0.5em', borderRadius: '0.5em' }}>Rule #1: Any Pokémon that faints is considered dead and must be released and stored in the box for the rest of the game</Typography>
+            <Typography sx={{ my: '0.2em', backgroundColor: 'rgba(230,230,240)', p: '0.5em', borderRadius: '0.5em' }}>Rule #2: The player may only catch the first wild Pokémon encountered in each area, and none else. If the first wild Pokémon encountered faints or flees, there are no second chances. If the first encounter in the area is a Double Battle, the player is free to choose which of the two wild Pokémon they would like to catch but may only catch one of them. This restriction does not necessarily apply to Pokémon able to be captured during static encounters, nor to Shiny Pokémon.</Typography>
+            <Typography sx={{ my: '0.2em', backgroundColor: 'rgba(240,220,240)', p: '0.5em', borderRadius: '0.5em' }}>Rule #3: The player may not voluntarily reset and reload the game whenever things go wrong. Being able to do so would render all of the other rules pointless.</Typography>
+            <Typography sx={{ my: '0.2em', backgroundColor: 'rgba(240,240,230)', p: '0.5em', borderRadius: '0.5em' }}>Rule #4: The player must nickname all of their Pokémon, for the sake of forming stronger emotional bonds.</Typography>
+            <Typography sx={{ my: '0.2em', backgroundColor: 'rgba(220,240,240)', p: '0.5em', borderRadius: '0.5em' }}>Rule #5: The player may put Pokémon that have fainted in the Pokémon Storage System permanently rather than releasing them. Some players of the Nuzlocke Challenge may have designated boxes for Pokémon that fainted.</Typography>
+            <Typography sx={{ my: '0.2em', backgroundColor: 'rgba(240,230,230)', p: '0.5em', borderRadius: '0.5em' }}>Rule #6: The player may only use Pokémon they have captured themselves, meaning Pokémon acquired through trading, Mystery Gifts, etc., are prohibited. Trading for the purpose of evolving Pokémon is allowed.</Typography>
+          </Box>
+        </Menu>
         <TextField sx={{ my: '0.5em' }} inputRef={routeSearchRef} label="Search Route" onChange={search} />
-        <TextField sx={{ my: '0.5em' }} inputRef={pokemonSearchRef} label="Search Pokemon" onChange={search} />
+        <TextField sx={{ my: '0.5em' }} inputRef={pokemonSearchRef} label="Search Pokémon" onChange={search} />
         <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}><Checkbox inputRef={showDeadRef} onChange={search} /><Typography>Show dead</Typography></Box>
-        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}><Typography>{`Total Pokemon: ${cookieData.length}`}</Typography></Box>
-        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}><Typography>{`Total Pokemon Alive: ${livingPokemon.length}`}</Typography></Box>
-        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}><Typography>{`Total Pokemon Dead: ${deadPokemon.length}`}</Typography></Box>
+        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}><Typography>{`Total Pokémon: ${cookieData.length}`}</Typography></Box>
+        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}><Typography>{`Total Pokémon Alive: ${livingPokemon.length}`}</Typography></Box>
+        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}><Typography>{`Total Pokémon Dead: ${deadPokemon.length}`}</Typography></Box>
         <Box>
           <TableContainer 
             id="Dead-Pokemon_Table"
@@ -360,7 +404,7 @@ function NuzlockeTracker(props) {
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow key={`row_two_${Math.floor(Math.random() * 100)}_header`}>
-                  <TableCell key={`cell_two_${Math.floor(Math.random() * 100)}_header`} sx={{ backgroundColor: 'lightgray', borderBottom: '2px solid black' }}><Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>Dead Pokemon</Box></TableCell>
+                  <TableCell key={`cell_two_${Math.floor(Math.random() * 100)}_header`} sx={{ backgroundColor: 'lightgray', borderBottom: '2px solid black' }}><Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>Dead Pokémon</Box></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
