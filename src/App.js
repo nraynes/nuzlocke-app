@@ -1,24 +1,25 @@
 import logo from './logo.svg';
+import { Typography } from '@mui/material';
+import { Box } from '@mui/system';
 import './App.css';
+import NuzlockeTracker from './NuzlockeTracker';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Box
+      id="App"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100vw',
+        height: ['max-content', '100vh']
+      }}
+    >
+      <Typography variant="h4" sx={{ mb: '0.5em' }} >Pokemon Nuzlock App</Typography>
+      <NuzlockeTracker />
+    </Box>
   );
 }
 
