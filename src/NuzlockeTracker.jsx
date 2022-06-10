@@ -37,11 +37,14 @@ function NuzlockeTracker(props) {
   const deadPokemon = ([...cookieData].filter((item) => {if (item.dead) return item}))
   const [editing, setEditing] = useState(null);
   const routeRef = useRef();
+  const nicknameRef = useRef();
   const pokemonRef = useRef();
   const routeSearchRef = useRef();
+  const nicknameSearchRef = useRef();
   const pokemonSearchRef = useRef();
   const showDeadRef = useRef();
   const routeEditRef = useRef();
+  const nicknameEditRef = useRef();
   const pokemonEditRef = useRef();
   const expiration = addTime({ days: 30 })
 
@@ -72,19 +75,22 @@ function NuzlockeTracker(props) {
 
   const headers = [
     'Route',
+    'Nickname',
     'Pokémon',
   ];
 
-  const addRow = (route, pokemon) => {
+  const addRow = (route, nickname, pokemon) => {
     const newData = [...data];
     newData.push({
       index: data[data.length-1] ? data[data.length-1].index + 1 : 0,
       dead: false,
       route,
       pokemon,
+      nickname,
     })
     routeRef.current.value = '';
     pokemonRef.current.value = '';
+    nicknameRef.current.value = '';
     setCookie(cookieName, newData, expiration);
     setData(newData);
   }
@@ -113,13 +119,16 @@ function NuzlockeTracker(props) {
     if (theData) {
       const newData = theData.filter((item) => {
         const itemRoute = (item.route).toLowerCase();
+        const itemNickname = (item.nickname).toLowerCase();
         const itemPokemon = (item.pokemon).toLowerCase();
         const routeVal = (routeSearchRef.current.value).toLowerCase();
+        const nicknameVal = (nicknameSearchRef.current.value).toLowerCase();
         const pokemonVal = (pokemonSearchRef.current.value).toLowerCase();
         const matchedRoute = !routeVal || (routeVal && itemRoute.match(routeVal))
+        const matchedNickname = !nicknameVal || (nicknameVal && itemNickname.match(nicknameVal))
         const matchedPokemon = !pokemonVal || (pokemonVal && itemPokemon.match(pokemonVal))
-        const nothingTyped = !routeVal && !pokemonVal;
-        if ((matchedRoute && matchedPokemon) || nothingTyped) {
+        const nothingTyped = !routeVal && !nicknameVal && !pokemonVal;
+        if ((matchedRoute && matchedPokemon && matchedNickname) || nothingTyped) {
           if (!showDeadRef.current.checked || (showDeadRef.current.checked && item.dead)) {
             return item;
           }
@@ -131,6 +140,7 @@ function NuzlockeTracker(props) {
 
   const editRow = (row) => {
     const newRoute = routeEditRef.current && routeEditRef.current.value;
+    const newNickname = nicknameEditRef.current && nicknameEditRef.current.value;
     const newPokemon = pokemonEditRef.current && pokemonEditRef.current.value;
     const newData = cookieData.map((item) => {
       if (item.index === row.index) {
@@ -139,6 +149,7 @@ function NuzlockeTracker(props) {
           dead: row.dead,
           route: newRoute ? newRoute : item.route,
           pokemon: newPokemon ? newPokemon : item.pokemon,
+          nickname: newNickname ? newNickname : item.nickname,
         }
       }
       return item;
@@ -210,8 +221,9 @@ function NuzlockeTracker(props) {
           }}
         >
           <TextField sx={{ mx: '0.5em', width: '100%' }} inputRef={routeRef} label="Route" />
+          <TextField sx={{ mx: '0.5em', width: '100%' }} inputRef={nicknameRef} label="Nickname" />
           <TextField sx={{ mx: '0.5em', width: '100%' }} inputRef={pokemonRef} label="Pokémon" />
-          <Button type="submit" onClick={(e) => {e.preventDefault(); addRow(routeRef.current.value, pokemonRef.current.value)}} variant="contained" color="secondary" sx={{ mx: '0.5em', width: 'max-content' }}>Add</Button>
+          <Button type="submit" onClick={(e) => {e.preventDefault(); addRow(routeRef.current.value, nicknameRef.current.value, pokemonRef.current.value)}} variant="contained" color="secondary" sx={{ mx: '0.5em', width: 'max-content' }}>Add</Button>
         </Box>
         <TableContainer
           id="Nuzlocke-Table"
@@ -254,6 +266,29 @@ function NuzlockeTracker(props) {
                           }}
                         >
                           {item.route}
+                        </Typography>
+                      )}
+                  </TableCell>
+                  <TableCell
+                    key={`cell_${Math.floor(Math.random() * 100)}_${i}_1`}
+                    sx={{
+                      borderRight: '1px solid gray',
+                      borderLeft: '1px solid gray',
+                      width: '10em',
+                      overFlow: 'scroll',
+                    }}
+                  >
+                    {editing === item.index
+                      ? (
+                        <TextField variant="standard" inputRef={nicknameEditRef} defaultValue={item.nickname} />
+                      )
+                      : (
+                        <Typography
+                          sx={{
+                            overflowWrap: 'break-word',
+                          }}
+                        >
+                          {item.nickname}
                         </Typography>
                       )}
                   </TableCell>
@@ -412,6 +447,7 @@ function NuzlockeTracker(props) {
           {renderMenu()}
         </Menu>
         <TextField sx={{ my: '0.5em' }} inputRef={routeSearchRef} label="Search Route" onChange={search} />
+        <TextField sx={{ my: '0.5em' }} inputRef={nicknameSearchRef} label="Search Nickname" onChange={search} />
         <TextField sx={{ my: '0.5em' }} inputRef={pokemonSearchRef} label="Search Pokémon" onChange={search} />
         <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}><Checkbox inputRef={showDeadRef} onChange={search} /><Typography>Show dead</Typography></Box>
         <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}><Typography>{`Total Pokémon: ${cookieData.length}`}</Typography></Box>
@@ -422,7 +458,7 @@ function NuzlockeTracker(props) {
             id="Dead-Pokemon_Table"
             sx={{
               width: 'auto',
-              height: '14.4em',
+              height: '9.9em',
               backgroundColor: 'white',
               mt: '0.5em',
               mb: '1em',
@@ -439,7 +475,7 @@ function NuzlockeTracker(props) {
               <TableBody>
                 {deadPokemon.map((item, i) => (
                   <TableRow key={`row_two_${Math.floor(Math.random() * 100)}_${i}`}>
-                    <TableCell key={`cell_two_${Math.floor(Math.random() * 100)}_${i}`}><Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>{item.pokemon}</Box></TableCell>
+                    <TableCell key={`cell_two_${Math.floor(Math.random() * 100)}_${i}`}><Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>{item.nickname}</Box></TableCell>
                   </TableRow>
                 ))}
               </TableBody>
