@@ -416,71 +416,60 @@ function NuzlockeTracker(props) {
       <Box
         id="ControlDeck"
         sx={{
+          height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          p: '0.5em',
-          height: '100%',
+          justifyContent: 'space-between',
+          px: '0.5em',
         }}
       >
-        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}>
-          <Tooltip title="Clear All"><IconButton onClick={clearAll} sx={{ m: '0.5em', width: 'max-content' }}><RestartAltIcon /></IconButton></Tooltip>
-          <Tooltip title="Nuzlocke Rules"><IconButton id="rules-button" aria-controls={open ? 'rules-menu' : undefined} aria-haspopup="true" aria-expanded={open ? 'true' : undefined} onClick={(e) => handleClick(e, 1)} sx={{ m: '0.5em', width: 'max-content' }}><AssignmentIcon /></IconButton></Tooltip>
-          <Tooltip title="Help"><IconButton id="help-button" aria-controls={open ? 'help-menu' : undefined} aria-haspopup="true" aria-expanded={open ? 'true' : undefined} onClick={(e) => handleClick(e, 2)} sx={{ m: '0.5em', width: 'max-content' }}><HelpIcon /></IconButton></Tooltip>
-        </Box>
-        <Menu
-          id="rules-menu"
-          anchorEl={anchorEl}
-          open={open}
-          onClose={handleClose}
-          MenuListProps={{
-            'aria-labelledby': 'rules-button',
-            sx: {
-              backgroundColor: 'rgba(250,250,250)',
-            }
-          }}
+        <Box
           sx={{
-            mx: '1em',
-            maxHeight: '30em',
-            overFlow: 'scroll',
+            display: 'flex',
+            flexDirection: 'column',
+            mt: '1em',
           }}
         >
-          {renderMenu()}
-        </Menu>
-        <TextField sx={{ my: '0.5em' }} inputRef={routeSearchRef} label="Search Route" onChange={search} />
-        <TextField sx={{ my: '0.5em' }} inputRef={nicknameSearchRef} label="Search Nickname" onChange={search} />
-        <TextField sx={{ my: '0.5em' }} inputRef={pokemonSearchRef} label="Search Pokémon" onChange={search} />
-        <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}><Checkbox inputRef={showDeadRef} onChange={search} /><Typography>Show dead</Typography></Box>
-        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}><Typography>{`Total Pokémon: ${cookieData.length}`}</Typography></Box>
-        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}><Typography>{`Total Pokémon Alive: ${livingPokemon.length}`}</Typography></Box>
-        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}><Typography>{`Total Pokémon Dead: ${deadPokemon.length}`}</Typography></Box>
-        <Box>
-          <TableContainer 
-            id="Dead-Pokemon_Table"
+          <Box sx={{ background: 'rgba(255,255,200,0.4)', borderRadius: '2em', width: 'auto', display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}>
+            <Tooltip title="Clear All"><IconButton onClick={clearAll} sx={{ m: '0.5em', width: 'max-content' }}><RestartAltIcon /></IconButton></Tooltip>
+            <Tooltip title="Nuzlocke Rules"><IconButton id="rules-button" aria-controls={open ? 'rules-menu' : undefined} aria-haspopup="true" aria-expanded={open ? 'true' : undefined} onClick={(e) => handleClick(e, 1)} sx={{ m: '0.5em', width: 'max-content' }}><AssignmentIcon /></IconButton></Tooltip>
+            <Tooltip title="Help"><IconButton id="help-button" aria-controls={open ? 'help-menu' : undefined} aria-haspopup="true" aria-expanded={open ? 'true' : undefined} onClick={(e) => handleClick(e, 2)} sx={{ m: '0.5em', width: 'max-content' }}><HelpIcon /></IconButton></Tooltip>
+          </Box>
+          <Menu
+            id="rules-menu"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            MenuListProps={{
+              'aria-labelledby': 'rules-button',
+              sx: {
+                backgroundColor: 'rgba(250,250,250)',
+              }
+            }}
             sx={{
-              width: 'auto',
-              height: '9.9em',
-              backgroundColor: 'white',
-              mt: '0.5em',
-              mb: '1em',
-              border: '2px solid black',
-              borderRadius: '0.5em',
+              mx: '1em',
+              maxHeight: '30em',
+              overFlow: 'scroll',
             }}
           >
-            <Table stickyHeader aria-label="sticky table">
-              <TableHead>
-                <TableRow key={`row_two_${Math.floor(Math.random() * 100)}_header`}>
-                  <TableCell key={`cell_two_${Math.floor(Math.random() * 100)}_header`} sx={{ backgroundColor: 'lightgray', borderBottom: '2px solid black' }}><Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>Dead Pokémon</Box></TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {deadPokemon.map((item, i) => (
-                  <TableRow key={`row_two_${Math.floor(Math.random() * 100)}_${i}`}>
-                    <TableCell key={`cell_two_${Math.floor(Math.random() * 100)}_${i}`}><Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>{item.nickname}</Box></TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+            {renderMenu()}
+          </Menu>
+          <TextField sx={{ my: '0.5em' }} inputRef={routeSearchRef} label="Search Route" onChange={search} />
+          <TextField sx={{ my: '0.5em' }} inputRef={nicknameSearchRef} label="Search Nickname" onChange={search} />
+          <TextField sx={{ my: '0.5em' }} inputRef={pokemonSearchRef} label="Search Pokémon" onChange={search} />
+          <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}><Checkbox inputRef={showDeadRef} onChange={search} /><Typography>Show dead</Typography></Box>
+        </Box>
+        <Box
+          sx={{
+            border: '1px solid black',
+            p: '0.5em',
+            borderRadius: '0.5em',
+            mb: '0.5em',
+          }}
+        >
+          <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}><Typography>{`Total Pokémon: ${cookieData.length}`}</Typography></Box>
+          <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}><Typography>{`Total Pokémon Alive: ${livingPokemon.length}`}</Typography></Box>
+          <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}><Typography>{`Total Pokémon Dead: ${deadPokemon.length}`}</Typography></Box>
         </Box>
       </Box>
     </Box>
