@@ -13,7 +13,6 @@ import {
   Tooltip,
   Checkbox,
   Menu,
-  MenuItem,
 } from '@mui/material';
 import { Box } from '@mui/system';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -24,10 +23,11 @@ import DoneIcon from '@mui/icons-material/Done';
 import HeartBrokenIcon from '@mui/icons-material/HeartBroken';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import TableViewIcon from '@mui/icons-material/TableView';
 import HelpIcon from '@mui/icons-material/Help';
-import compareArrays from './utils/compareArrays';
 import { setCookie, getCookie, clearCookie } from './utils/cookies';
 import addTime from './utils/addTime';
+import TypeChart from './TypeChart.jsx';
 
 function NuzlockeTracker(props) {
   const [data, setData] = useState([]);
@@ -58,10 +58,6 @@ function NuzlockeTracker(props) {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
-  const refreshPage = () => {
-    window.location.reload();
-  }
 
   useEffect(() => {
     try {
@@ -181,21 +177,25 @@ function NuzlockeTracker(props) {
           <Typography sx={{ my: '0.2em', backgroundColor: 'rgba(240,230,230)', p: '0.5em', borderRadius: '0.5em' }}>Rule #6: The player may only use Pokémon they have captured themselves, meaning Pokémon acquired through trading, Mystery Gifts, etc., are prohibited. Trading for the purpose of evolving Pokémon is allowed.</Typography>
         </Box>
     )
-    : (
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          px: '1em',
-          maxWidth: '40em',
-        }}
-      >
-        <Typography sx={{ my: '0.2em' }} variant="h6">App Help</Typography>
-        <Typography sx={{ my: '0.2em', backgroundColor: 'rgba(240,220,230)', p: '0.5em', borderRadius: '0.5em' }}>This app is designed to be used to help track what routes you have picked up Pokémon on. The rules of a Pokémon Nuzlocke state that you can only capture the first Pokémon per route, so you can use this app to track this information to make your Nuzlocke easier! The rules of a Nuzlocke are available by clicking the button that looks like a clipboard. To use the app, just type in the route and pokemon you caught on that route (or if it's your starter, just put starter for the route and if you didn't catch anything on the route, just put N/a.) and click "Add". This will add the information to the table and you can either edit the information, delete the information, or set that Pokémon's status to dead to track which Pokémon you have available and which routes you've already been on. You also get a view of some other information on the right side of the screen such as how many pokemon and routes you've discovered, plus how many are dead and alive, and which ones are dead. If you want to see/edit any of your dead Pokémon, just check the show dead checkbox to view all of your dead Pokémon in the table, or alternatively you can search through the table by route or by Pokémon (you can use both at the same time). Enjoy!</Typography>
-      </Box>
-    )
+    : helpItem === 2 
+      ? (
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            px: '1em',
+            maxWidth: '40em',
+          }}
+        >
+          <Typography sx={{ my: '0.2em' }} variant="h6">App Help</Typography>
+          <Typography sx={{ my: '0.2em', backgroundColor: 'rgba(240,220,230)', p: '0.5em', borderRadius: '0.5em' }}>This app is designed to be used to help track what routes you have picked up Pokémon on. The rules of a Pokémon Nuzlocke state that you can only capture the first Pokémon per route, so you can use this app to track this information to make your Nuzlocke easier! The rules of a Nuzlocke are available by clicking the button that looks like a clipboard. To use the app, just type in the route and pokemon you caught on that route (or if it's your starter, just put starter for the route and if you didn't catch anything on the route, just put N/a.) and click "Add". This will add the information to the table and you can either edit the information, delete the information, or set that Pokémon's status to dead to track which Pokémon you have available and which routes you've already been on. You also get a view of some other information on the right side of the screen such as how many pokemon and routes you've discovered, plus how many are dead and alive, and which ones are dead. If you want to see/edit any of your dead Pokémon, just check the show dead checkbox to view all of your dead Pokémon in the table, or alternatively you can search through the table by route or by Pokémon (you can use both at the same time). Enjoy!</Typography>
+        </Box>
+      )
+      : (
+        <TypeChart />
+      )
   )
 
   return (
@@ -432,16 +432,17 @@ function NuzlockeTracker(props) {
         >
           <Box sx={{ background: 'rgba(255,255,200,0.4)', borderRadius: '2em', width: 'auto', display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}>
             <Tooltip title="Clear All"><IconButton onClick={clearAll} sx={{ m: '0.5em', width: 'max-content' }}><RestartAltIcon /></IconButton></Tooltip>
-            <Tooltip title="Nuzlocke Rules"><IconButton id="rules-button" aria-controls={open ? 'rules-menu' : undefined} aria-haspopup="true" aria-expanded={open ? 'true' : undefined} onClick={(e) => handleClick(e, 1)} sx={{ m: '0.5em', width: 'max-content' }}><AssignmentIcon /></IconButton></Tooltip>
-            <Tooltip title="Help"><IconButton id="help-button" aria-controls={open ? 'help-menu' : undefined} aria-haspopup="true" aria-expanded={open ? 'true' : undefined} onClick={(e) => handleClick(e, 2)} sx={{ m: '0.5em', width: 'max-content' }}><HelpIcon /></IconButton></Tooltip>
+            <Tooltip title="Type Chart"><IconButton id="table-button" aria-controls={'the-menu'} aria-haspopup="true" aria-expanded={'true'} onClick={(e) => handleClick(e, 3)} sx={{ m: '0.5em', width: 'max-content' }}><TableViewIcon /></IconButton></Tooltip>
+            <Tooltip title="Nuzlocke Rules"><IconButton id="rules-button" aria-controls={'the-menu'} aria-haspopup="true" aria-expanded={'true'} onClick={(e) => handleClick(e, 1)} sx={{ m: '0.5em', width: 'max-content' }}><AssignmentIcon /></IconButton></Tooltip>
+            <Tooltip title="Help"><IconButton id="help-button" aria-controls={'the-menu'} aria-haspopup="true" aria-expanded={'true'} onClick={(e) => handleClick(e, 2)} sx={{ m: '0.5em', width: 'max-content' }}><HelpIcon /></IconButton></Tooltip>
           </Box>
           <Menu
-            id="rules-menu"
+            id="the-menu"
             anchorEl={anchorEl}
             open={open}
             onClose={handleClose}
             MenuListProps={{
-              'aria-labelledby': 'rules-button',
+              'aria-labelledby': helpItem === 1 ? 'rules-button' : helpItem === 2 ? 'help-button' : 'table-button',
               sx: {
                 backgroundColor: 'rgba(250,250,250)',
               }
