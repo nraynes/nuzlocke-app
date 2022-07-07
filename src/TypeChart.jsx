@@ -6,7 +6,9 @@ import capsFirstLetter from './utils/capsFirstLetter';
 import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule';
 
 function TypeChart(props) {
-  const noElement = <HorizontalRuleIcon />
+  const noElement = (color) => (
+    <HorizontalRuleIcon sx={{ color, }} />
+  )
   const commonCellSx = {
     display: 'flex',
     width: '100%',
@@ -16,19 +18,29 @@ function TypeChart(props) {
     alignItems: 'center',
   };
   const commonTypographySx = {
-    width: 'max-content'
+    width: 'max-content',
+    transition: '0.5s',
+    '&:hover': {
+      transform: 'scale(1.1)',
+      cursor: 'pointer',
+      p: '0.2em',
+    },
+  };
+  const commonHeaderTypographySx = {
+    fontWeight: 'bold',
+    fontSize: '1.3em',
   };
   return (
-    <Box>
-      <TableContainer>
-        <Table>
+    <Box sx={{ overflow: 'hidden' }}>
+      <TableContainer sx={{ height: '27em' }}>
+        <Table stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell><Box sx={commonCellSx}><Typography>Type</Typography></Box></TableCell>
-              <TableCell><Box sx={commonCellSx}><Typography>Strong Against</Typography></Box></TableCell>
-              <TableCell><Box sx={commonCellSx}><Typography>Weak Against</Typography></Box></TableCell>
-              <TableCell><Box sx={commonCellSx}><Typography>Resistant To</Typography></Box></TableCell>
-              <TableCell><Box sx={commonCellSx}><Typography>Weak To</Typography></Box></TableCell>
+              <TableCell><Box sx={commonCellSx}><Typography sx={{...commonHeaderTypographySx, ...commonTypographySx}}>Type</Typography></Box></TableCell>
+              <TableCell><Box sx={commonCellSx}><Typography sx={{...commonHeaderTypographySx, ...commonTypographySx}}>Strong Against</Typography></Box></TableCell>
+              <TableCell><Box sx={commonCellSx}><Typography sx={{...commonHeaderTypographySx, ...commonTypographySx}}>Weak Against</Typography></Box></TableCell>
+              <TableCell><Box sx={commonCellSx}><Typography sx={{...commonHeaderTypographySx, ...commonTypographySx}}>Resistant To</Typography></Box></TableCell>
+              <TableCell><Box sx={commonCellSx}><Typography sx={{...commonHeaderTypographySx, ...commonTypographySx}}>Weak To</Typography></Box></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -36,11 +48,11 @@ function TypeChart(props) {
               const curVal = Object.values(types)[i];
               return (
                 <TableRow sx={{ backgroundColor: curVal.color }}>
-                  <TableCell><Box sx={commonCellSx}><Typography sx={commonTypographySx}>{capsFirstLetter(type)}</Typography></Box></TableCell>
-                  <TableCell><Box sx={commonCellSx}>{curVal.strongAgainst.length ? curVal.strongAgainst.map((item) => (<Typography sx={commonTypographySx}>{item}</Typography>)) : noElement}</Box></TableCell>
-                  <TableCell><Box sx={commonCellSx}>{curVal.weakAgainst.length ? curVal.weakAgainst.map((item) => (<Typography sx={commonTypographySx}>{item}</Typography>)) : noElement}</Box></TableCell>
-                  <TableCell><Box sx={commonCellSx}>{curVal.resistantTo.length ? curVal.resistantTo.map((item) => (<Typography sx={commonTypographySx}>{item}</Typography>)) : noElement}</Box></TableCell>
-                  <TableCell><Box sx={commonCellSx}>{curVal.weakTo.length ? curVal.weakTo.map((item) => (<Typography sx={commonTypographySx}>{item}</Typography>)) : noElement}</Box></TableCell>
+                  <TableCell><Box sx={commonCellSx}><Typography sx={{ color: curVal.text, ...commonTypographySx}}>{capsFirstLetter(type)}</Typography></Box></TableCell>
+                  <TableCell><Box sx={commonCellSx}>{curVal.strongAgainst.length ? curVal.strongAgainst.map((item) => (<Typography sx={{ color: curVal.text, ...commonTypographySx}}>{item}</Typography>)) : noElement(curVal.text)}</Box></TableCell>
+                  <TableCell><Box sx={commonCellSx}>{curVal.weakAgainst.length ? curVal.weakAgainst.map((item) => (<Typography sx={{ color: curVal.text, ...commonTypographySx}}>{item}</Typography>)) : noElement(curVal.text)}</Box></TableCell>
+                  <TableCell><Box sx={commonCellSx}>{curVal.resistantTo.length ? curVal.resistantTo.map((item) => (<Typography sx={{ color: curVal.text, ...commonTypographySx}}>{item}</Typography>)) : noElement(curVal.text)}</Box></TableCell>
+                  <TableCell><Box sx={commonCellSx}>{curVal.weakTo.length ? curVal.weakTo.map((item) => (<Typography sx={{ color: curVal.text, ...commonTypographySx}}>{item}</Typography>)) : noElement(curVal.text)}</Box></TableCell>
                 </TableRow>
               )
             })}

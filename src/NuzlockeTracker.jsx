@@ -450,7 +450,7 @@ function NuzlockeTracker(props) {
             sx={{
               mx: '1em',
               maxHeight: '30em',
-              overFlow: 'scroll',
+              overFlow: helpItem === 3 ? 'hidden' : 'scroll',
             }}
           >
             {renderMenu()}
